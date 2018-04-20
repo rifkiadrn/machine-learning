@@ -44,7 +44,6 @@ class DecisionTreeCART():
                 greater_than.append(row)
         return less_than, greater_than
 
-
     def __get_split(self, dataset):
         
         b_index = 999
@@ -68,7 +67,6 @@ class DecisionTreeCART():
                     b_groups = groups
         
         return {'index':b_index, 'value':b_value, 'groups':b_groups}
-
 
     def __to_terminal(self, group):
         outcomes = [row[-1] for row in group]
@@ -97,13 +95,11 @@ class DecisionTreeCART():
         else:
             node['right'] = self.__get_split(right)
             self.__split(node['right'], max_depth, min_size, depth+1)
-            
-    
+
     def __build_tree(self, train, max_depth, min_size):
         root = self.__get_split(train)
         self.__split(root, max_depth, min_size, 1)
         return root
-
 
     def print_tree(self, node, depth=0):
         if isinstance(node, dict):
