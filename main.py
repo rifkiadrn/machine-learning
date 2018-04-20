@@ -7,17 +7,23 @@ if __name__ == "__main__":
     borrower_df = pd.read_csv('data/Borrower.csv')
     loan_df = pd.read_csv('data/Loan.csv')
 
-    loan_feature = loan_df[['loanId', 'memberId', 'isJointApplication',\
-                    'loanAmount', 'term', 'interestRate', 'monthlyPayment', 'grade', 'loanStatus']]
+    loan_feature = loan_df[['loanId', 'memberId', 'isJointApplication',
+                            'loanAmount', 'term', 'interestRate',
+                            'monthlyPayment', 'grade', 'loanStatus']]
     loan_feature.set_index('loanId')
 
-    borrower_feature = borrower_df[['memberId', 'yearsEmployment',\
-                                    'homeOwnership', 'annualIncome', \
-                                    'dtiRatio', 'lengthCreditHistory', 'numTotalCreditLines',\
-                                    'numOpenCreditLines', 'numOpenCreditLines1Year',\
-                                    'revolvingBalance', 'revolvingUtilizationRate',\
-                                    'numDerogatoryRec', 'numDelinquency2Years',\
-                                    'numChargeoff1year', 'numInquiries6Mon']]
+    borrower_feature = borrower_df[['memberId', 'yearsEmployment',
+                                    'homeOwnership', 'annualIncome',
+                                    'dtiRatio', 'lengthCreditHistory',
+                                    'numTotalCreditLines',
+                                    'numOpenCreditLines',
+                                    'numOpenCreditLines1Year',
+                                    'revolvingBalance',
+                                    'revolvingUtilizationRate',
+                                    'numDerogatoryRec',
+                                    'numDelinquency2Years',
+                                    'numChargeoff1year',
+                                    'numInquiries6Mon']]
     borrower_feature.set_index('memberId')
 
     merged_df = pd.merge(borrower_feature, loan_feature, on='memberId')
@@ -29,10 +35,13 @@ if __name__ == "__main__":
     mode_term = merged_df.term.mode()[0]
     mean_numopen = round(merged_df.numOpenCreditLines.mean())
 
-    merged_df[["isJointApplication"]] = merged_df[["isJointApplication"]].fillna(value=mode_jointapp)
-    merged_df[["loanAmount"]] = merged_df[["loanAmount"]].fillna(value=mean_loan)
+    merged_df[["isJointApplication"]] = merged_df[[
+        "isJointApplication"]].fillna(value=mode_jointapp)
+    merged_df[["loanAmount"]] = merged_df[[
+        "loanAmount"]].fillna(value=mean_loan)
     merged_df[["term"]] = merged_df[["term"]].fillna(value=mode_term)
-    merged_df[["numOpenCreditLines"]] = merged_df[["numOpenCreditLines"]].fillna(value=mean_numopen)
+    merged_df[["numOpenCreditLines"]] = merged_df[[
+        "numOpenCreditLines"]].fillna(value=mean_numopen)
 
     replace_dict = {
         'yearsEmployment': {
@@ -45,7 +54,7 @@ if __name__ == "__main__":
         'homeOwnership': {
             'rent': 0,
             'mortgage': 1,
-            'own': 2, 
+            'own': 2,
         },
         'loanStatus': {
             'Default': 0,
