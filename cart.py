@@ -113,15 +113,6 @@ class DecisionTreeCART():
         self.__split(root, max_depth, min_size, 1)
         return root
 
-    def print_tree(self, node, depth=0):
-        if not isinstance(node, int):
-            print('%s[X%d < %.3f]' %
-                  ((depth*' ', (node.index+1), node.index)))
-            self.print_tree(node.left, depth+1)
-            self.print_tree(node.right, depth+1)
-        else:
-            print('%s[%s]' % ((depth*' ', node)))
-
     def fit(self, X, y, max_depth=10, min_size=1):
         a = np.array(X)
         b = np.array(y).reshape(len(y), 1)
