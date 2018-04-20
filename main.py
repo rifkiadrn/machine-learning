@@ -69,7 +69,6 @@ if __name__ == "__main__":
 
     cleaned_df = merged_df.replace(replace_dict)
     cleaned_df.to_csv('data/loan_cleaned.csv')
-    cleaned_df.head()
 
     train_df = cleaned_df.sample(1000)
     train_np = np.array(train_df.values)
@@ -91,4 +90,4 @@ if __name__ == "__main__":
         if predicted[i] == y_test[i]:
             pred_true += 1
 
-    print(pred_true)
+    print('Predicted True: ' + str(pred_true) + ' out of ' + str(len(y_test)))

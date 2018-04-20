@@ -57,7 +57,7 @@ class DecisionTreeCART():
                 greater_than.append(row)
         return less_than, greater_than
 
-    def __get_node(dataset):
+    def __get_node(self, dataset):
 
         b_index = 999
         b_value = 999
@@ -69,8 +69,8 @@ class DecisionTreeCART():
 
         for index in range(feature_cols):
             for row in dataset:
-                groups = make_split_group(index, row[index], dataset)
-                gini = gini_index(groups, class_values)
+                groups = self.__make_split_group(index, row[index], dataset)
+                gini = self.__gini_index(groups, class_values)
 
                 if gini < b_score:
                     b_index = index
@@ -84,7 +84,7 @@ class DecisionTreeCART():
         outcomes = [row[-1] for row in group]
         return max(set(outcomes), key=outcomes.count)
 
-    def __split(node, max_depth, min_size, depth):
+    def __split(self, node, max_depth, min_size, depth):
         left, right = node.groups
         del(node.groups)
         # check for a no split
@@ -93,8 +93,7 @@ class DecisionTreeCART():
             return
         # check for max depth
         if depth >= max_depth:
-            node.left, node.right = self.__to_terminal(left),
-            self.__to_terminal(right)
+            node.left, node.right = self.__to_terminal(left), self.__to_terminal(right)
             return
         # process left child
         if len(left) <= min_size:
@@ -110,7 +109,7 @@ class DecisionTreeCART():
             self.__split(node.right, max_depth, min_size, depth+1)
 
     def __build_tree(self, train, max_depth, min_size):
-        root = self.__get_split(train)
+        root = self.__get_node(train)
         self.__split(root, max_depth, min_size, 1)
         return root
 
