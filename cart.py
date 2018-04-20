@@ -1,6 +1,19 @@
 import numpy as np
 
 
+class Node:
+    index = None
+    value = None
+    groups = None
+    left = None
+    right = None
+
+    def __init__(self, index, value, groups):
+        self.index = index
+        self.value = value
+        self.groups = groups
+
+
 class DecisionTreeCART():
 
     def __init__(self, *args, **kwargs):
@@ -44,7 +57,7 @@ class DecisionTreeCART():
                 greater_than.append(row)
         return less_than, greater_than
 
-    def __get_split(self, dataset):
+    def __get_node(dataset):
 
         b_index = 999
         b_value = 999
@@ -55,47 +68,46 @@ class DecisionTreeCART():
         feature_cols = len(dataset[0]) - 1
 
         for index in range(feature_cols):
-            unique_val = np.unique(np.array(dataset)[:, index])
-            for val in unique_val:
-                groups = self.__make_split_group(index, val, dataset)
-                gini = self.__gini_index(groups, class_values)
+            for row in dataset:
+                groups = make_split_group(index, row[index], dataset)
+                gini = gini_index(groups, class_values)
 
                 if gini < b_score:
                     b_index = index
-                    b_value = val
+                    b_value = row[index]
                     b_score = gini
                     b_groups = groups
 
-        return {'index': b_index, 'value': b_value, 'groups': b_groups}
+        return Node(b_index, b_value, b_groups)
 
     def __to_terminal(self, group):
         outcomes = [row[-1] for row in group]
         return max(set(outcomes), key=outcomes.count)
 
-    def __split(self, node, max_depth, min_size, depth):
-        left, right = node['groups']
-        del(node['groups'])
-
+    def __split(node, max_depth, min_size, depth):
+        left, right = node.groups
+        del(node.groups)
+        # check for a no split
         if not left or not right:
-            node['left'] = node['right'] = self.__to_terminal(left + right)
+            node.left = node.right = self.__to_terminal(left + right)
             return
-
+        # check for max depth
         if depth >= max_depth:
-            node['left'], node['right'] = self.__to_terminal(
-                left), self.__to_terminal(right)
+            node.left, node.right = self.__to_terminal(left),
+            self.__to_terminal(right)
             return
-
+        # process left child
         if len(left) <= min_size:
-            node['left'] = self.__to_terminal(left)
+            node.left = self.__to_terminal(left)
         else:
-            node['left'] = self.__get_split(left)
-            self.__split(node['left'], max_depth, min_size, depth+1)
-
+            node.left = self.__get_node(left)
+            self.__split(node.left, max_depth, min_size, depth+1)
+        # process right child
         if len(right) <= min_size:
-            node['right'] = self.__to_terminal(right)
+            node.right = self.__to_terminal(right)
         else:
-            node['right'] = self.__get_split(right)
-            self.__split(node['right'], max_depth, min_size, depth+1)
+            node.right = self.__get_node(right)
+            self.__split(node.right, max_depth, min_size, depth+1)
 
     def __build_tree(self, train, max_depth, min_size):
         root = self.__get_split(train)
@@ -103,11 +115,11 @@ class DecisionTreeCART():
         return root
 
     def print_tree(self, node, depth=0):
-        if isinstance(node, dict):
+        if not isinstance(node, int):
             print('%s[X%d < %.3f]' %
-                  ((depth*' ', (node['index']+1), node['value'])))
-            self.print_tree(node['left'], depth+1)
-            self.print_tree(node['right'], depth+1)
+                  ((depth*' ', (node.index+1), node.index)))
+            self.print_tree(node.left, depth+1)
+            self.print_tree(node.right, depth+1)
         else:
             print('%s[%s]' % ((depth*' ', node)))
 
@@ -119,16 +131,16 @@ class DecisionTreeCART():
         self.tree = self.__build_tree(dataset, max_depth, min_size)
 
     def __predict_row(self, node, row):
-        if row[node['index']] < node['value']:
-            if isinstance(node['left'], dict):
-                return self.__predict_row(node['left'], row)
+        if row[node.index] < node.value:
+            if not isinstance(node.left, int):
+                return self.__predict_row(node.left, row)
             else:
-                return node['left']
+                return node.left
         else:
-            if isinstance(node['right'], dict):
-                return self.__predict_row(node['right'], row)
+            if not isinstance(node.right, int):
+                return self.__predict_row(node.right, row)
             else:
-                return node['right']
+                return node.right
 
     def predict(self, X):
         pred = list()
