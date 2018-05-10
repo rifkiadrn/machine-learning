@@ -122,12 +122,12 @@ class DecisionTreeCART():
 
     def __predict_row(self, node, row):
         if row[node.index] < node.value:
-            if not isinstance(node.left, int):
+            if isinstance(node.left, Node):
                 return self.__predict_row(node.left, row)
             else:
                 return node.left
         else:
-            if not isinstance(node.right, int):
+            if isinstance(node.right, Node):
                 return self.__predict_row(node.right, row)
             else:
                 return node.right
