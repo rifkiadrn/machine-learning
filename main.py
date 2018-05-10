@@ -80,9 +80,11 @@ if __name__ == "__main__":
     balanced_df = class_no.append(class_yes.sample(n))
     balanced_df.to_csv('data/loan_cleaned.csv')
 
-    train_df = balanced_df.sample(1000)
-    train_np = np.array(train_df.values)
-    test_np = np.array(balanced_df.sample(100).values)
+    dataset_np = cleaned_df.sample(1110).values
+    train_size = round(0.9 * len(dataset_np))
+    np.random.shuffle(dataset_np)
+    train_np = np.array(dataset_np[:train_size,:])
+    test_np = np.array(dataset_np[train_size:,:])
 
     X_train = train_np[:, :-1]
     y_train = train_np[:, len(train_np[0]) - 1]
