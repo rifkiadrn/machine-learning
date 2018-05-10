@@ -1,4 +1,8 @@
 from cart import DecisionTreeCART
+from sklearn.metrics import (
+    confusion_matrix,
+    f1_score,
+)
 import numpy as np
 import pandas as pd
 
@@ -68,11 +72,17 @@ if __name__ == "__main__":
     }
 
     cleaned_df = merged_df.replace(replace_dict)
-    cleaned_df.to_csv('data/loan_cleaned.csv')
 
-    train_df = cleaned_df.sample(1000)
+    class_yes = cleaned_df[cleaned_df['loanStatus'] == 1]
+    class_no = cleaned_df[cleaned_df['loanStatus'] == 0]
+
+    n = round(len(class_no) * 1.5)
+    balanced_df = class_no.append(class_yes.sample(n))
+    balanced_df.to_csv('data/loan_cleaned.csv')
+
+    train_df = balanced_df.sample(1000)
     train_np = np.array(train_df.values)
-    test_np = np.array(cleaned_df.sample(100).values)
+    test_np = np.array(balanced_df.sample(100).values)
 
     X_train = train_np[:, :-1]
     y_train = train_np[:, len(train_np[0]) - 1]
@@ -86,8 +96,32 @@ if __name__ == "__main__":
     predicted = clf.predict(X_test)
 
     pred_true = 0
+    tn = 0
+    tp = 0
+    fn = 0
+    fp = 0
     for i in range(len(predicted)):
         if predicted[i] == y_test[i]:
             pred_true += 1
+            if y_test[i] == 0:
+                tn += 1
+            else:
+                tp += 1
+        else:
+            if y_test[i] == 1:
+                fn += 1
+            else:
+                fp += 1
+    
+    precision = tp / (tp + fp)
+    recall = tp / (tp + fn)
+    f1 = 2 * (precision * recall) / (precision + recall)
 
-    print('Predicted True: ' + str(pred_true) + ' out of ' + str(len(y_test)))
+    print('Predicted True = ' + str(pred_true) + ' out of ' + str(len(y_test)))
+    print('Precision      = ', precision)
+    print('Recall         = ', recall)
+    print('True Positive  = ', tp)
+    print('True Negative  = ', tn)
+    print('False Positive = ', fp)
+    print('False Negative = ', fn)
+    print('F1 Score       = ', f1)
