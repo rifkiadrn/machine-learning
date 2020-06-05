@@ -3,7 +3,7 @@ bs4==0.0.1
 CacheControl==0.12.3
 certifi==2017.7.27.1
 chardet==3.0.4
-Django==1.11.5
+Django==1.11.29
 django-cors-headers==2.1.0
 djangorestframework==3.6.4
 freeze==1.0.10
