@@ -4,7 +4,7 @@ CacheControl==0.12.3
 certifi==2017.7.27.1
 chardet==3.0.4
 cycler==0.10.0
-Django==1.11.5
+Django==2.2.24
 djangorestframework==3.6.4
 idna==2.6
 imdbpie==4.3.0
