@@ -1,7 +1,7 @@
 beautifulsoup4==4.6.0
 bs4==0.0.1
 CacheControl==0.12.3
-certifi==2017.7.27.1
+certifi==2022.12.7
 chardet==3.0.4
 Django==1.11.5
 django-cors-headers==2.1.0
